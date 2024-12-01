@@ -129,6 +129,8 @@ int main(int argc, char** argv) {
 
     // Generate assembly from the stream of token
     while (!at_eof()) {
+
+        // Operator is either '+' or '-'
         if (consume('+')) {
             printf("    add rax, %d\n", expect_number());
             continue;
@@ -141,10 +143,4 @@ int main(int argc, char** argv) {
     printf("    ret\n");
     return 0;
 }
-
-
-
-
-
-
 
