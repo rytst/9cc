@@ -105,6 +105,8 @@ Token *tokenize(char *p) {
     }
 
     new_token(TK_EOF, cur, p);
+
+    // head is not used
     return head.next;
 }
 
