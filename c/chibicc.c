@@ -35,6 +35,23 @@ void error(char *fmt, ...) {
     exit(1);
 }
 
+// Input program
+char *user_input;
+
+// Report error location
+void error_at(char *loc, char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+
+    int pos = loc - user_input;
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, " ");
+    fprintf(stderr, "^ ");
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    exit(1);
+}
+
 // If token is the expected symbol, move to the next token
 // and return true
 bool consume(char op) {
@@ -48,7 +65,7 @@ bool consume(char op) {
 // Otherwise, report error
 void expect(char op) {
     if (token->kind != TK_RESERVED || token->str[0] != op)
-        error("token is not '%c'.", op);
+        error_at(token->str, "token is not '%c'.", op);
     token = token->next;
 }
 
@@ -56,7 +73,7 @@ void expect(char op) {
 // Otherwise, report error
 int expect_number() {
     if (token->kind != TK_NUM)
-        error("token is not number.");
+        error_at(token->str, "token is not a number.");
     int val = token->val;
     token = token->next;
     return val;
@@ -101,7 +118,7 @@ Token *tokenize(char *p) {
             continue;
         }
 
-        error("Can not tokenize!");
+        error_at(p, "Can not tokenize!");
     }
 
     new_token(TK_EOF, cur, p);
@@ -111,16 +128,16 @@ Token *tokenize(char *p) {
 }
 
 
-
-
 int main(int argc, char** argv) {
     if (argc != 2) {
         error("Invalid number of arguments.");
         return 1;
     }
 
+    user_input = argv[1];
+
     // tokenize give argument
-    token = tokenize(argv[1]);
+    token = tokenize(user_input);
 
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
